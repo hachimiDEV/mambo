@@ -6,7 +6,7 @@
   <title>Pong 2</title>
   <style>
     body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    canvas { background: #111; border: 2px solid #fff; max-width: 100%; height: auto; }
+    canvas { background: #111; border: 2px solid #fff; }
   </style>
 </head>
 <body>
@@ -26,8 +26,11 @@
       y: canvas.height / 2,
       vx: 5,
       vy: 5,
+      img: new Image(),
       size: 40
     };
+
+    ball.img.src = "https://cdn.discordapp.com/attachments/934558910847778906/1442366502870450297/mamboball.gif?ex=69252bfc&is=6923da7c&hm=d8bf5219bb0036bc553f6b103bf970e872a2e981f6462ee1b99570c62d511893";
 
     function drawPaddle(p) {
       ctx.fillStyle = '#fff';
@@ -36,18 +39,20 @@
 
     function drawBall() {
       const radius = ball.size / 2;
-      ctx.beginPath();
-      ctx.arc(ball.x, ball.y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
+      if (ball.img.complete) {
+        ctx.drawImage(ball.img, ball.x - radius, ball.y - radius, ball.size, ball.size);
+      } else {
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+      }
     }
 
     function moveAI() {
       const center = ai.y + paddleHeight / 2;
       if (ball.y < center) ai.y -= 4;
       else ai.y += 4;
-      // keep AI on screen
-      ai.y = Math.max(0, Math.min(canvas.height - paddleHeight, ai.y));
     }
 
     function updateBall() {
@@ -96,8 +101,6 @@
     document.addEventListener('mousemove', e => {
       const rect = canvas.getBoundingClientRect();
       player.y = e.clientY - rect.top - paddleHeight / 2;
-      // keep player on screen
-      player.y = Math.max(0, Math.min(canvas.height - paddleHeight, player.y));
     });
 
     function drawScore() {
